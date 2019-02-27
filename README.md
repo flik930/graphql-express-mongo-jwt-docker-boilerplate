@@ -2,7 +2,7 @@
 
 This is a pure API backend boilerplate which include the following functionality
 Graphql
-###Authentaction with JWT:
+### Authentaction with JWT:
   * Signup (email, password)
   * Email Verification
   * Login (email, password)
@@ -10,24 +10,26 @@ Graphql
   * Password reset
   * Facebook token signup / signin
 
-###Technology Stack:
-  * Docker
-  * Docker Compose
-  * Node.js
-  * Express
-  * MongoDB
-  * graphql-yoga
+### Technology Stack:
+  * [Docker](https://www.docker.com/)
+  * [Docker Compose](https://docs.docker.com/compose/)
+  * [Node.js](https://nodejs.org)
+  * [Express](https://expressjs.com/)
+  * [MongoDB](https://www.mongodb.com/)
+  * [Mongo Express](https://github.com/mongo-express/mongo-express)
+  * [graphql-yoga](https://github.com/prisma/graphql-yoga)
+  * [SendGrid](https://sendgrid.com/) for email service
 
-###Getting start:
+### Getting start:
 
-1. rename .env.example to .env and 
-2. fill in your setting and credentials in .env
-3. docker-compose up
+1. Rename `.env.example` to `.env` and 
+2. Fill in your setting and credentials in `.env`
+3. `docker-compose up`
 
 * localhost:3000 for api signup login stuff (you can try it in postman)
 * localhost:4000 for graphql play ground
 * localhsot:8082 for mongo express (inspecting database)
 
-###Enjoy!
+### Enjoy!
 
 
