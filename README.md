@@ -1,8 +1,9 @@
 # graphql-express-mongo-jwt-docker-boilerplate
 
 This is a pure API backend boilerplate which include the following functionality
-Graphql
+
 ### Authentaction with JWT:
+  * Graphql
   * Signup (email, password)
   * Email Verification
   * Login (email, password)
