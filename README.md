@@ -22,6 +22,10 @@ getting start:
 2. fill in your setting and credentials in .env
 3. docker-compose up
 
+localhost:3000 for signup login stuff
+localhost:4000 for graphql
+localhsot:8082 for mongo express
+
 Enjoy!
 
 
