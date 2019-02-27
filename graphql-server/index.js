@@ -38,7 +38,7 @@ app.post('/signup', userController.postSignup)
 app.post('/login', userController.postLogin)
 
 app.post('/forgot', userController.postForgot);
-app.post('/reset', passport.authenticate('jwt', {session:false}), userController.postReset)
+app.post('/reset', userController.postReset)
 app.post('/updatePassword', passport.authenticate('jwt', { session: false }), userController.postUpdatePassword)
 
 app.post('/deleteAccount', passport.authenticate('jwt', {session: false}), userController.postDeleteAccount)

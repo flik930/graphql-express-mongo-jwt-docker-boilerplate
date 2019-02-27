@@ -136,13 +136,19 @@ exports.postReset = (req, res, next) => {
 
   const resetPassword = () =>
     User
-      .findOne({ _id: req.user._id })
+      .findOne({ passwordResetToken: req.body.token })
+      .where('passwordResetExpires').gt(Date.now())
       .then((user) => {
         if (!user) {
-          return res.send({'errors': 'No User is found.' });
+          return res.send({'errors': 'Password reset token is invalid or has expired.' });
         }
         user.password = req.body.password;
-        return user.save();
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        return user.save().then((user, err) => new Promise((resolve, reject) => {
+          if (err) reject(err);
+          resolve(user);
+        }));
       });
 
   const sendResetPasswordEmail = (user) => {
@@ -190,7 +196,6 @@ exports.postReset = (req, res, next) => {
 
   resetPassword()
     .then(sendResetPasswordEmail)
-    .then(() => { if (!res.finished) res.redirect('/'); })
     .catch(err => next(err));
 };
 
@@ -205,8 +210,7 @@ exports.postForgot = (req, res, next) => {
   const errors = req.validationErrors();
 
   if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/forgot');
+    return res.send({errors});
   }
 
   const createRandomToken = randomBytesAsync(16)
@@ -217,7 +221,7 @@ exports.postForgot = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          req.flash('errors', { msg: 'Account with that email address does not exist.' });
+          res.send({'errors': 'Account with that email address does not exist.' });
         } else {
           user.passwordResetToken = token;
           user.passwordResetExpires = Date.now() + 3600000; // 1 hour
