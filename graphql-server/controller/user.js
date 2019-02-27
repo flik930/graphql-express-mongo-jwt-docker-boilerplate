@@ -56,10 +56,12 @@ exports.postSignup = (req, res, next) => {
   if (errors) {
     return res.send({errors});
   }
+  const emailVerificationToken = crypto.randomBytes(16).toString('hex');
 
   const user = new User({
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    emailVerificationToken
   });
 
   User.findOne({ email: req.body.email }, (error, existingUser) => {
@@ -78,9 +80,62 @@ exports.postSignup = (req, res, next) => {
           if (error) { return res.send({error}); }
           res.send({success: true, token});
         })
+
+        //send email validation
+        if (!user) { return; }
+        let transporter = nodemailer.createTransport({
+          service: 'SendGrid',
+          auth: {
+            user: process.env.SENDGRID_USER,
+            pass: process.env.SENDGRID_PASSWORD
+          }
+        });
+        const mailOptions = {
+          to: user.email,
+          from: 'hackathon@starter.com',
+          subject: 'Email Verification',
+          text: `Hello,\n\n please click link below to verify your account ${user.email}.\n\n http://${req.headers.host}/verify/${emailVerificationToken}\n\n`
+        };
+        return transporter.sendMail(mailOptions)
+          .catch((err) => {
+            if (err.message === 'self signed certificate in certificate chain') {
+              console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
+              transporter = nodemailer.createTransport({
+                service: 'SendGrid',
+                auth: {
+                  user: process.env.SENDGRID_USER,
+                  pass: process.env.SENDGRID_PASSWORD
+                },
+                tls: {
+                  rejectUnauthorized: false
+                }
+              });
+              return transporter.sendMail(mailOptions)
+            }
+            console.log('ERROR: Could not send password reset confirmation email after security downgrade.\n', err);
+            res.send({errors: 'Your Email Verification has been sent, however we were unable to send you a confirmation email. We will be looking into it shortly.' });
+            return err;
+          });
       }
     });
   });
+};
+
+exports.postEmailVerification = (req, res, next) => {
+  User.findOne({ emailVerificationToken: req.body.token }).then((user) => {
+    if (!user) {
+      res.send({'errors': 'Email validation token is invalid' });
+    } else {
+      user.emailVerified = true;
+      user.emailVerificationToken = undefined;
+      user.save().then((user, err) => new Promise((resolve, reject) => {
+        if (err) res.send(err);
+        if (user) {
+          res.send({success: true, msg: 'You have successfully verified your email'})
+        }
+      }));
+    }
+  })
 };
 
 /**

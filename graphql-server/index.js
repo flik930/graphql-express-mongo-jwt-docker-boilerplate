@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/signup', userController.postSignup)
-
+app.post('/emailVerification', userController.postEmailVerification)
 app.post('/login', userController.postLogin)
 
 app.post('/forgot', userController.postForgot);
