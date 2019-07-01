@@ -10,6 +10,7 @@ import passport from "passport";
 import cors from "cors";
 import typeDefs from "schema";
 import resolvers from "resolvers";
+import jwt from "jsonwebtoken";
 
 mongoose.connect('mongodb://' + process.env.MONGODB_USERNAME + ':' + process.env.MONGODB_PASSWORD + '@mongodb:27017/test?authSource=admin', { useNewUrlParser: true }).then(() => console.log('MongoDB Connected'))
 .catch(err => console.log(err));
