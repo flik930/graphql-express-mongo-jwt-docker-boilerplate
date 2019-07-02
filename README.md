@@ -17,7 +17,7 @@ This is a full-stack boilerplate aim to help quicker startup of a mordern tech p
   * [Express](https://expressjs.com/)
   * [MongoDB](https://www.mongodb.com/)
   * [Mongo Express](https://github.com/mongo-express/mongo-express)
-  * [graphql-yoga](https://github.com/prisma/graphql-yoga)
+  * [Graphql-yoga](https://github.com/prisma/graphql-yoga)
   * [SendGrid](https://sendgrid.com/) for email service
 
 ### Getting start:
@@ -26,7 +26,7 @@ This is a full-stack boilerplate aim to help quicker startup of a mordern tech p
 2. Fill in your setting and credentials in `.env`
 3. `docker-compose up`
 
-###API
+### Application ports
 * localhost:3000 for api signup login stuff (you can try it in postman)
 * localhost:4000 for graphql play ground
 * localhsot:8082 for mongo express (inspecting database)
@@ -38,8 +38,8 @@ This is a full-stack boilerplate aim to help quicker startup of a mordern tech p
 * Context API
 
 ### To startup the FE in dev
-* `cd react-app`
-* `yarn && yarn start`
+1. `cd react-app`
+2. `yarn && yarn start`
 
 ### Enjoy!
 
