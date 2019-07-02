@@ -1,9 +1,8 @@
 # graphql-express-mongo-jwt-docker-boilerplate
 
-This is a pure API backend boilerplate which include the following functionality
+This is a full-stack boilerplate aim to help quicker startup of a mordern tech project (Side Project or Hackathon), functionalities will cover basic membership management, which including:
 
-### Authentaction with JWT:
-  * Graphql
+### Authentication with JWT:
   * Signup (email, password)
   * Email Verification
   * Login (email, password)
@@ -27,9 +26,20 @@ This is a pure API backend boilerplate which include the following functionality
 2. Fill in your setting and credentials in `.env`
 3. `docker-compose up`
 
+###API
 * localhost:3000 for api signup login stuff (you can try it in postman)
 * localhost:4000 for graphql play ground
 * localhsot:8082 for mongo express (inspecting database)
+
+### Recently Added react app in the stack (under construction):
+### Tech / plugin / UI tools:
+* Material UI
+* Hook API
+* Context API
+
+### To startup the FE in dev
+* `cd react-app`
+* `yarn && yarn start`
 
 ### Enjoy!
 
