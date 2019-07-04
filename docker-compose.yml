@@ -3,7 +3,7 @@ services:
   graphql:
     restart: always
     container_name: graphql
-    image: node:latest
+    image: node:current
     restart: always
     working_dir: /home/node/app
     volumes:
