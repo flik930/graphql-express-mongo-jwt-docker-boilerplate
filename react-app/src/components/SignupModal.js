@@ -16,13 +16,20 @@ const SignupModal = (props) => {
 
   const [errors, setErrors] = React.useState({});
 
+  const [signupResponse, setSignupResponse] = React.useState({});
+
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value });
   };
 
   const handleSubmit = () => {
     schema.validate(values, {abortEarly: false}).then((valid) => {
-      valid && MemberService.signup(values);
+      valid && MemberService.signup(values).then((response) => {
+        setSignupResponse(response);
+        setErrors({});
+      }, (err) => {
+        setSignupResponse(err.response.data);
+      });
     }).catch(err => {
       let reducedErrors = err.inner.reduce(function(obj, e) {
         obj[e.path] = e;
@@ -60,7 +67,7 @@ const SignupModal = (props) => {
           margin="dense"
           variant="outlined"
         />
-        <br/>
+        <ErrorMsg>{errors.email && errors.email.message}</ErrorMsg>
         <TextField
           error={!!errors.password}
           id="standard-name"
@@ -71,6 +78,7 @@ const SignupModal = (props) => {
           margin="dense"
           variant="outlined"
         />
+        <ErrorMsg>{errors.password && errors.password.message}</ErrorMsg>
         <TextField
           error={!!errors.passwordConfirmation}
           id="standard-name"
@@ -81,6 +89,10 @@ const SignupModal = (props) => {
           margin="dense"
           variant="outlined"
         />
+        <ErrorMsg>{errors.passwordConfirmation && errors.passwordConfirmation.message}</ErrorMsg>
+        <ErrorMsg>
+          {signupResponse && signupResponse.error}
+        </ErrorMsg>
         <Button style={{float: 'right', marginTop: '10px'}} onClick={handleSubmit}>Signup</Button>
       </StyledPaper>
     </Modal>
@@ -88,6 +100,10 @@ const SignupModal = (props) => {
 }
 
 export default SignupModal;
+
+const ErrorMsg = styled('div')`
+  color: red;
+`
 
 const StyledPaper = styled('div')`
   top: 50%;

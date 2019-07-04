@@ -68,7 +68,7 @@ exports.postSignup = (req, res, next) => {
       return res.send(error)  
     }
     if (existingUser) {
-      return res.send({error: 'Account with that email address already exists.'});
+      return res.status(400).send({error: 'Account with that email address already exists.'});
     }
     user.save((error) => {
       if (error) {
@@ -275,7 +275,7 @@ exports.postForgot = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          res.send({'errors': 'Account with that email address does not exist.' });
+          res.status(400).json({'errors': 'Account with that email address does not exist.' });
         } else {
           user.passwordResetToken = token;
           user.passwordResetExpires = Date.now() + 3600000; // 1 hour
