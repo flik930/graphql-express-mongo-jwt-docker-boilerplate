@@ -6,10 +6,12 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import LoginModal from './components/LoginModal';
+import SignupModal from './components/SignupModal';
 import {hot} from 'react-hot-loader';
 
 function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [signupModalOpen, setSignupModalOpen] = useState(false);
 
   return (
     <div>
@@ -19,10 +21,11 @@ function App() {
             Photos
           </StyledTypography>
           <Button color="inherit" onClick={() => setLoginModalOpen(true)}>Login</Button> / 
-          <Button color="inherit">Signup</Button>
+          <Button color="inherit" onClick={() => setSignupModalOpen(true)}>Signup</Button>
         </Toolbar>
       </AppBar>
       <LoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)}/>
+      <SignupModal open={signupModalOpen} onClose={() => setSignupModalOpen(false)}/>
     </div>
   );
 }
