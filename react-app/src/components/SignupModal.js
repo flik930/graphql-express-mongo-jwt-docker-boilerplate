@@ -5,6 +5,7 @@ import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
 import MemberService from '../services/memberService';
 import * as Yup from 'yup';
+import Utils from '../utils/utils';
 
 const SignupModal = (props) => {
 
@@ -26,7 +27,9 @@ const SignupModal = (props) => {
     schema.validate(values, {abortEarly: false}).then((valid) => {
       valid && MemberService.signup(values).then((response) => {
         setSignupResponse(response);
+        Utils.saveBearerToken(response.data.token);
         setErrors({});
+        props.logedIn();
       }, (err) => {
         setSignupResponse(err.response.data);
       });

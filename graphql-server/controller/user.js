@@ -77,7 +77,7 @@ exports.postSignup = (req, res, next) => {
         req.login(user, {session: false}, (error) => {
           const token = genJWT(req.user);
           if (error) { return res.send({error}); }
-          res.send({success: true, token});
+          res.send({success: true, token, user: req.user});
         })
 
         //send email validation

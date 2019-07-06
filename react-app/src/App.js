@@ -13,6 +13,11 @@ function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [signupModalOpen, setSignupModalOpen] = useState(false);
 
+  const logedIn = () => {
+    setLoginModalOpen(false);
+    setSignupModalOpen(false);
+  }
+
   return (
     <div>
       <AppBar position="static" color="default">
@@ -24,8 +29,8 @@ function App() {
           <Button color="inherit" onClick={() => setSignupModalOpen(true)}>Signup</Button>
         </Toolbar>
       </AppBar>
-      <LoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)}/>
-      <SignupModal open={signupModalOpen} onClose={() => setSignupModalOpen(false)}/>
+      <LoginModal logedIn={logedIn} open={loginModalOpen} onClose={() => setLoginModalOpen(false)}/>
+      <SignupModal logedIn={logedIn} open={signupModalOpen} onClose={() => setSignupModalOpen(false)}/>
     </div>
   );
 }

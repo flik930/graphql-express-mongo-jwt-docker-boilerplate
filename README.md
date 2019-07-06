@@ -27,7 +27,7 @@ This is a full-stack boilerplate aim to help quicker startup of a mordern tech p
 3. `docker-compose up`
 
 ### Application ports
-* localhost:3000 for api signup login stuff (you can try it in postman)
+* localhost:3001 for api signup login stuff (you can try it in postman)
 * localhost:4000 for graphql play ground
 * localhsot:8082 for mongo express (inspecting database)
 
