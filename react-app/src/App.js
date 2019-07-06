@@ -9,6 +9,7 @@ import LoginModal from './components/LoginModal';
 import SignupModal from './components/SignupModal';
 import EmailConfirmationModal from './components/EmailConfirmationModal';
 import {hot} from 'react-hot-loader';
+import FacebookLogin from 'react-facebook-login';
 
 function App() {
   const [modalState, setModalState] = useState({
@@ -25,6 +26,10 @@ function App() {
     setModalState({emailConfirmation: true, signup: false});
   }
 
+  const responseFacebook = (response) => {
+    console.log(response);
+  }
+
   return (
     <div>
       <AppBar position="static" color="default">
@@ -32,6 +37,11 @@ function App() {
           <StyledTypography variant="h6" color="inherit">
             Photos
           </StyledTypography>
+          <FacebookLogin
+            appId="2253032208279352"
+            autoLoad={true}
+            fields="name,email,picture"
+            callback={responseFacebook} />
           <Button color="inherit" onClick={() => setModalState({login: true})}>Login</Button> / 
           <Button color="inherit" onClick={() => setModalState({signup: true})}>Signup</Button>
         </Toolbar>
