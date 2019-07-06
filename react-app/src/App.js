@@ -7,15 +7,22 @@ import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import LoginModal from './components/LoginModal';
 import SignupModal from './components/SignupModal';
+import EmailConfirmationModal from './components/EmailConfirmationModal';
 import {hot} from 'react-hot-loader';
 
 function App() {
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [signupModalOpen, setSignupModalOpen] = useState(false);
+  const [modalState, setModalState] = useState({
+    login: false,
+    signup: false,
+    emailConfirmation: false
+  });
 
-  const logedIn = () => {
-    setLoginModalOpen(false);
-    setSignupModalOpen(false);
+  const loginSucceed = () => {
+    setModalState({login: false});
+  }
+
+  const signupSucceed = () => {
+    setModalState({emailConfirmation: true, signup: false});
   }
 
   return (
@@ -25,12 +32,13 @@ function App() {
           <StyledTypography variant="h6" color="inherit">
             Photos
           </StyledTypography>
-          <Button color="inherit" onClick={() => setLoginModalOpen(true)}>Login</Button> / 
-          <Button color="inherit" onClick={() => setSignupModalOpen(true)}>Signup</Button>
+          <Button color="inherit" onClick={() => setModalState({login: true})}>Login</Button> / 
+          <Button color="inherit" onClick={() => setModalState({signup: true})}>Signup</Button>
         </Toolbar>
       </AppBar>
-      <LoginModal logedIn={logedIn} open={loginModalOpen} onClose={() => setLoginModalOpen(false)}/>
-      <SignupModal logedIn={logedIn} open={signupModalOpen} onClose={() => setSignupModalOpen(false)}/>
+      <LoginModal succeed={loginSucceed} open={modalState.login} onClose={() => setModalState({login: false})}/>
+      <SignupModal succeed={signupSucceed} open={modalState.signup} onClose={() => setModalState({signup: false})}/>
+      <EmailConfirmationModal open={modalState.emailConfirmation} onClose={() => setModalState({emailConfirmation: false})} ></EmailConfirmationModal>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import MemberService from '../services/memberService';
 import * as Yup from 'yup';
 import Utils from '../utils/utils';
+import Card from '@material-ui/core/Card';
 
 const SignupModal = (props) => {
 
@@ -29,7 +30,7 @@ const SignupModal = (props) => {
         setSignupResponse(response);
         Utils.saveBearerToken(response.data.token);
         setErrors({});
-        props.logedIn();
+        props.succeed();
       }, (err) => {
         setSignupResponse(err.response.data);
       });
@@ -108,7 +109,7 @@ const ErrorMsg = styled('div')`
   color: red;
 `
 
-const StyledPaper = styled('div')`
+const StyledPaper = styled(Card)`
   top: 50%;
   left: 50%;
   background: white;
