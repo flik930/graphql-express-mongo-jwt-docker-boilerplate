@@ -11,15 +11,23 @@ import cors from "cors";
 import typeDefs from "schema";
 import resolvers from "resolvers";
 import jwt from "jsonwebtoken";
+import User from "models/User";
+import axios from "axios";
 
 mongoose.connect('mongodb://' + process.env.MONGODB_USERNAME + ':' + process.env.MONGODB_PASSWORD + '@mongodb:27017/test?authSource=admin', { useNewUrlParser: true }).then(() => console.log('MongoDB Connected'))
 .catch(err => console.log(err));
 
-const server = new GraphQLServer({ typeDefs, resolvers, context: (req) => {
+const server = new GraphQLServer({ typeDefs, resolvers, pretty: true, context: async (req) => {
   if (req.request.headers && req.request.headers.authorization) {
     const token = req.request.headers.authorization.split(' ')[1];
-    const user = jwt.decode(token, process.env.SERVER_SECRET);
-    return {user}
+    const _user = jwt.decode(token, process.env.SERVER_SECRET);
+    let user;
+    if (_user) {
+      user = await User.findById(_user._id);
+    } else {
+      user = null;
+    }
+    return {user};
   } else {
     return {user: null}
   }
@@ -45,12 +53,20 @@ app.post('/updatePassword', passport.authenticate('jwt', { session: false }), us
 app.post('/deleteAccount', passport.authenticate('jwt', {session: false}), userController.postDeleteAccount)
 
 app.post('/auth/facebook/token', function(req, res, next){
-  passport.authenticate('facebook-token',
-  function (erros, user) {
-    if (erros) res.send({erros})
-    const token = userController.genJWT(user);
-    res.send({success: true, token})
-  })(req, res, next)
+  axios.get('https://graph.facebook.com/me/?fields=email,name&access_token=' + req.body.token).then((result) => {
+    console.log('success', result.data);
+    const matchObj = {$or: [{facebook: result.data.id}, {email: result.data.email}]};
+    const updatObj = {facebook: result.data.id, email: result.data.email, name: result.data.name};
+    User.findOneAndUpdate(matchObj, updatObj, (erros, user) => {
+      if(erros) res.send({errors})
+      const token = userController.genJWT({_id: user._id});
+      res.send({success: true, token})
+    })
+  }).catch(function (errors) {
+    // handle error
+    console.log('errors', errors);
+    res.send({errors});
+  })
 });
 
 app.listen(3001);
