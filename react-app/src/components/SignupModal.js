@@ -28,7 +28,8 @@ const SignupModal = (props) => {
     schema.validate(values, {abortEarly: false}).then((valid) => {
       valid && MemberService.signup(values).then((response) => {
         setSignupResponse(response);
-        Utils.saveBearerToken(response.data.token);
+        Utils.setBearerToken(response.data.token);
+        Utils.setUserInfo(response.data.user);
         setErrors({});
         props.succeed();
       }, (err) => {

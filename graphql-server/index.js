@@ -52,15 +52,15 @@ app.post('/updatePassword', passport.authenticate('jwt', { session: false }), us
 
 app.post('/deleteAccount', passport.authenticate('jwt', {session: false}), userController.postDeleteAccount)
 
-app.post('/auth/facebook/token', function(req, res, next){
+app.post('/auth/facebook', function(req, res, next){
   axios.get('https://graph.facebook.com/me/?fields=email,name&access_token=' + req.body.token).then((result) => {
     console.log('success', result.data);
     const matchObj = {$or: [{facebook: result.data.id}, {email: result.data.email}]};
     const updatObj = {facebook: result.data.id, email: result.data.email, name: result.data.name};
-    User.findOneAndUpdate(matchObj, updatObj, (erros, user) => {
-      if(erros) res.send({errors})
+    User.findOneAndUpdate(matchObj, updatObj, {useFindAndModify: false}, (errors, user) => {
+      if(errors) res.send({errors})
       const token = userController.genJWT({_id: user._id});
-      res.send({success: true, token})
+      res.send({success: true, token, user})
     })
   }).catch(function (errors) {
     // handle error

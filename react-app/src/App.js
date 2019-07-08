@@ -10,6 +10,8 @@ import SignupModal from './components/SignupModal';
 import EmailConfirmationModal from './components/EmailConfirmationModal';
 import {hot} from 'react-hot-loader';
 import FacebookLogin from 'react-facebook-login';
+import MemberService from './services/memberService';
+import Utils from './utils/utils';
 
 function App() {
   const [modalState, setModalState] = useState({
@@ -27,7 +29,10 @@ function App() {
   }
 
   const responseFacebook = (response) => {
-    console.log(response);
+    MemberService.facebookLogin({token: response.accessToken}).then(response => {
+      Utils.setBearerToken(response.data.token);
+      Utils.setUserInfo(response.data.user);
+    })
   }
 
   return (
