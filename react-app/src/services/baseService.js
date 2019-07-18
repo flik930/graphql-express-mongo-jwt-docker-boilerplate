@@ -2,8 +2,31 @@ import config from '../config';
 import axios from 'axios';
 import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
+import ApolloClient from "apollo-boost";
+import Utils from '../utils/utils';
 
 let instance;
+let gqlInstance;
+let token;
+
+export const getGqlClient = () => {
+  if (!gqlInstance) {
+    if (!token) {
+      token = Utils.getBearerToken();
+    }
+    gqlInstance = new ApolloClient({
+      uri: config.graphQLuri,
+      request: async (operation) => {
+        operation.setContext({
+          headers: {
+            authorization: `Bearer ${token}`
+          }
+        })
+      }
+    });
+  }
+  return gqlInstance;
+}
 
 const getDefaultOptions = () => {
   let token = localStorage.getItem('accessToken');

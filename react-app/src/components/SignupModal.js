@@ -29,11 +29,10 @@ const SignupModal = (props) => {
       valid && MemberService.signup(values).then((response) => {
         setSignupResponse(response);
         Utils.setBearerToken(response.data.token);
-        Utils.setUserInfo(response.data.user);
         setErrors({});
         props.succeed();
       }, (err) => {
-        setSignupResponse(err.response.data);
+        err.response && setSignupResponse(err.response.data);
       });
     }).catch(err => {
       let reducedErrors = err.inner.reduce(function(obj, e) {

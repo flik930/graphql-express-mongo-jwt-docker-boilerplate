@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,6 +13,7 @@ import FacebookLogin from 'react-facebook-login';
 import MemberService from './services/memberService';
 import Utils from './utils/utils';
 import globalStore from './stores/globalStore';
+import Avatar from '@material-ui/core/Avatar';
 
 function App() {
   const [modalState, setModalState] = useState({
@@ -22,21 +23,25 @@ function App() {
   });
 
   const loginSucceed = () => {
-    setModalState({login: false});
+    setModalState({...modalState, login: false});
   }
 
   const signupSucceed = () => {
-    setModalState({emailConfirmation: true, signup: false});
+    setModalState({...modalState, emailConfirmation: true, signup: false});
   }
 
   const responseFacebook = (response) => {
     MemberService.facebookLogin({token: response.accessToken}).then(response => {
       Utils.setBearerToken(response.data.token);
-      Utils.setUserInfo(response.data.user);
       globalStore.userInfo = response.data.user;
-      console.log(globalStore.userInfo)
     })
   }
+
+  useEffect(() => {
+    MemberService.getUserInfo().then((res) => {
+      globalStore.userInfo = res.data.userInfo;
+    });
+  });
 
   return (
     <div>
@@ -45,18 +50,27 @@ function App() {
           <StyledTypography variant="h6" color="inherit">
             Photos
           </StyledTypography>
-          <FacebookLogin
-            appId="2253032208279352"
-            autoLoad={true}
-            fields="name,email,picture"
-            callback={responseFacebook} />
-          <Button color="inherit" onClick={() => setModalState({login: true})}>Login</Button> / 
-          <Button color="inherit" onClick={() => setModalState({signup: true})}>Signup</Button>
+          {
+            globalStore.userInfo ?
+              <>
+                <FacebookLogin
+                  appId="2253032208279352"
+                  autoLoad={true}
+                  fields="name,email,picture"
+                  size="small"
+                  callback={responseFacebook} />
+                <Button color="inherit" onClick={() => setModalState({...modalState, login: true})}>Login</Button> /
+                <Button color="inherit" onClick={() => setModalState({...modalState, signup: true})}>Signup</Button>
+              </>
+            :
+              <Avatar src={process.env.PUBLIC_URL + '/images/default_avatar.png'}/>
+          }
+
         </Toolbar>
       </AppBar>
-      <LoginModal succeed={loginSucceed} open={modalState.login} onClose={() => setModalState({login: false})}/>
-      <SignupModal succeed={signupSucceed} open={modalState.signup} onClose={() => setModalState({signup: false})}/>
-      <EmailConfirmationModal open={modalState.emailConfirmation} onClose={() => setModalState({emailConfirmation: false})} ></EmailConfirmationModal>
+      <LoginModal succeed={loginSucceed} open={modalState.login} onClose={() => setModalState({...modalState, login: false})}/>
+      <SignupModal succeed={signupSucceed} open={modalState.signup} onClose={() => setModalState({...modalState, signup: false})}/>
+      <EmailConfirmationModal open={modalState.emailConfirmation} onClose={() => setModalState({...modalState, emailConfirmation: false})} ></EmailConfirmationModal>
     </div>
   );
 }
