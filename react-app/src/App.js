@@ -51,10 +51,14 @@ function App() {
   }
 
   const getUserInfo = async () => {
-    MemberService.getUserInfo().then((res) => {
-      globalStore.userInfo = res.data.me;
+    try {
       globalStore.loggedIn = true;
-    });
+      globalStore.userInfo = await MemberService.getUserInfo();
+    } catch (e) {
+      globalStore.loggedIn = false;
+      globalStore.userInfo = null;
+      console.warn(e)
+    }
   }
 
   const responseFacebook = (response) => {
