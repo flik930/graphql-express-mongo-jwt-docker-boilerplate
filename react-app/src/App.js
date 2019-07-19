@@ -14,8 +14,28 @@ import MemberService from './services/memberService';
 import Utils from './utils/utils';
 import globalStore from './stores/globalStore';
 import Avatar from '@material-ui/core/Avatar';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { view, store } from 'react-easy-state'
 
 function App() {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  }
+
+  const logout = () => {
+    Utils.setBearerToken('');
+    globalStore.userInfo = null;
+    globalStore.loggedIn = false;
+    setAnchorEl(null);
+  }
+
   const [modalState, setModalState] = useState({
     login: false,
     signup: false,
@@ -30,18 +50,26 @@ function App() {
     setModalState({...modalState, emailConfirmation: true, signup: false});
   }
 
+  const getUserInfo = async () => {
+    MemberService.getUserInfo().then((res) => {
+      globalStore.userInfo = res.data.me;
+      globalStore.loggedIn = true;
+    });
+  }
+
   const responseFacebook = (response) => {
     MemberService.facebookLogin({token: response.accessToken}).then(response => {
       Utils.setBearerToken(response.data.token);
-      globalStore.userInfo = response.data.user;
+      getUserInfo();
     })
   }
 
   useEffect(() => {
-    MemberService.getUserInfo().then((res) => {
-      globalStore.userInfo = res.data.userInfo;
-    });
-  });
+    if (Utils.getBearerToken()) {
+      globalStore.loggedIn = true;
+      getUserInfo();
+    }
+  }, []);
 
   return (
     <div>
@@ -51,11 +79,11 @@ function App() {
             Photos
           </StyledTypography>
           {
-            globalStore.userInfo ?
+            !globalStore.loggedIn ?
               <>
                 <FacebookLogin
                   appId="2253032208279352"
-                  autoLoad={true}
+                  autoLoad={false}
                   fields="name,email,picture"
                   size="small"
                   callback={responseFacebook} />
@@ -63,7 +91,19 @@ function App() {
                 <Button color="inherit" onClick={() => setModalState({...modalState, signup: true})}>Signup</Button>
               </>
             :
-              <Avatar src={process.env.PUBLIC_URL + '/images/default_avatar.png'}/>
+              <>
+                <Avatar src={process.env.PUBLIC_URL + '/images/default_avatar.png'} onClick={handleAvatarClick}/>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                >
+                  <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+                  <MenuItem onClick={logout}>Logout</MenuItem>
+                </Menu>
+              </>
           }
 
         </Toolbar>
@@ -75,7 +115,7 @@ function App() {
   );
 }
 
-export default hot(module)(App);
+export default hot(module)(view(App));
 
 const StyledTypography = styled(Typography)`
   flex-grow: 1;
