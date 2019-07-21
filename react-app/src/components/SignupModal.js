@@ -7,6 +7,7 @@ import MemberService from '../services/memberService';
 import * as Yup from 'yup';
 import Utils from '../utils/utils';
 import Card from '@material-ui/core/Card';
+import ErrorMsg from './common/ErrorMsg';
 
 const SignupModal = (props) => {
 
@@ -104,10 +105,6 @@ const SignupModal = (props) => {
 }
 
 export default SignupModal;
-
-const ErrorMsg = styled('div')`
-  color: red;
-`
 
 const StyledPaper = styled(Card)`
   top: 50%;

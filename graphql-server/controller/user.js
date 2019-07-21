@@ -25,16 +25,16 @@ exports.postLogin = (req, res, next) => {
   const error = req.validationErrors();
 
   if (error) {
-    return res.send({error});
+    return res.status(400).send({error});
   }
 
   passport.authenticate('local', {session: false},(error, user, info) => {
     if (error) { return res.send({error}); }
     if (!user) {
-      return res.send({'errors': info});
+      return res.status(400).send({'error': info});
     }
     req.login(user, {session: false}, (error) => {
-      if (error) { return res.send({error}); }
+      if (error) { return res.status(400).send({error}); }
       const token = genJWT(req.user);
       res.send({success: true, token});
     })
@@ -50,10 +50,10 @@ exports.postSignup = (req, res, next) => {
   req.assert('password', 'Password must be at least 4 characters long').len(4);
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
-  const errors = req.validationErrors();
+  const error = req.validationErrors();
 
-  if (errors) {
-    return res.send({errors});
+  if (error) {
+    return res.send({error});
   }
   const emailVerificationToken = crypto.randomBytes(16).toString('hex');
 
@@ -112,7 +112,7 @@ exports.postSignup = (req, res, next) => {
               return transporter.sendMail(mailOptions)
             }
             console.log('ERROR: Could not send password reset confirmation email after security downgrade.\n', err);
-            res.send({errors: 'Your Email Verification has been sent, however we were unable to send you a confirmation email. We will be looking into it shortly.' });
+            res.send({error: 'Your Email Verification has been sent, however we were unable to send you a confirmation email. We will be looking into it shortly.' });
             return err;
           });
       }
@@ -123,7 +123,7 @@ exports.postSignup = (req, res, next) => {
 exports.postEmailVerification = (req, res, next) => {
   User.findOne({ emailVerificationToken: req.body.token }).then((user) => {
     if (!user) {
-      res.send({'errors': 'Email validation token is invalid' });
+      res.send({'error': 'Email validation token is invalid' });
     } else {
       user.emailVerified = true;
       user.emailVerificationToken = undefined;
@@ -145,10 +145,10 @@ exports.postUpdatePassword = (req, res, next) => {
   req.assert('password', 'Password must be at least 4 characters long').len(4);
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password.toString());
 
-  const errors = req.validationErrors();
+  const error = req.validationerror();
 
-  if (errors) {
-    return res.send({errors});
+  if (error) {
+    return res.send({error});
   }
 
   User.findById(req.user.id, (err, user) => {
@@ -182,10 +182,10 @@ exports.postReset = (req, res, next) => {
   req.assert('password', 'Password must be at least 4 characters long.').len(4);
   req.assert('confirmPassword', 'Passwords must match.').equals(req.body.password.toString());
 
-  const errors = req.validationErrors();
+  const error = req.validationerror();
 
-  if (errors) {
-    res.send({errors});
+  if (error) {
+    res.send({error});
   }
 
   const resetPassword = () =>
@@ -194,7 +194,7 @@ exports.postReset = (req, res, next) => {
       .where('passwordResetExpires').gt(Date.now())
       .then((user) => {
         if (!user) {
-          return res.send({'errors': 'Password reset token is invalid or has expired.' });
+          return res.send({'error': 'Password reset token is invalid or has expired.' });
         }
         user.password = req.body.password;
         user.passwordResetToken = undefined;
@@ -243,7 +243,7 @@ exports.postReset = (req, res, next) => {
             });
         }
         console.log('ERROR: Could not send password reset confirmation email after security downgrade.\n', err);
-        res.send({errors: 'Your password has been changed, however we were unable to send you a confirmation email. We will be looking into it shortly.' });
+        res.send({error: 'Your password has been changed, however we were unable to send you a confirmation email. We will be looking into it shortly.' });
         return err;
       });
   };
@@ -261,10 +261,10 @@ exports.postForgot = (req, res, next) => {
   req.assert('email', 'Please enter a valid email address.').isEmail();
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
-  const errors = req.validationErrors();
+  const error = req.validationerror();
 
-  if (errors) {
-    return res.send({errors});
+  if (error) {
+    return res.send({error});
   }
 
   const createRandomToken = randomBytesAsync(16)
@@ -275,7 +275,7 @@ exports.postForgot = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          res.status(400).json({'errors': 'Account with that email address does not exist.' });
+          res.status(400).json({'error': 'Account with that email address does not exist.' });
         } else {
           user.passwordResetToken = token;
           user.passwordResetExpires = Date.now() + 3600000; // 1 hour
@@ -326,7 +326,7 @@ exports.postForgot = (req, res, next) => {
             });
         }
         console.log('ERROR: Could not send forgot password email after security downgrade.\n', err);
-        res.send({'errors': 'Error sending the password reset message. Please try again shortly.' });
+        res.send({'error': 'Error sending the password reset message. Please try again shortly.' });
         return err;
       });
   };

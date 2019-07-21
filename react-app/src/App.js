@@ -44,6 +44,7 @@ function App() {
 
   const loginSucceed = () => {
     setModalState({...modalState, login: false});
+    getUserInfo();
   }
 
   const signupSucceed = () => {

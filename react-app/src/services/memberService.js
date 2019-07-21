@@ -5,6 +5,7 @@ import { gql } from "apollo-boost";
 const gqlClient = getGqlClient();
 
 const MemberService = {
+  emailLogin: (params) => Post({url: config.baseUrl + 'login', params}),
   signup: (params) => Post({url: config.baseUrl + 'signup', params}),
   facebookLogin: (params) => Post({url: config.baseUrl + 'auth/facebook', params}),
   getUserInfo: () => gqlClient.query({

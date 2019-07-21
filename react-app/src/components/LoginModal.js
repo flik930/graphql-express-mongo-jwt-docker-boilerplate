@@ -4,6 +4,10 @@ import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
+import MemberService from '../services/memberService';
+import * as Yup from 'yup';
+import ErrorMsg from './common/ErrorMsg';
+import Utils from '../utils/utils';
 
 const LoginModal = (props) => {
 
@@ -15,6 +19,36 @@ const LoginModal = (props) => {
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value });
   };
+
+  const [errors, setErrors] = React.useState({});
+  const [loginResponse, setLoginResponse] = React.useState({});
+
+  const handleSubmit = () => {
+    schema.validate(values, {abortEarly: false}).then((valid) => {
+      valid && MemberService.emailLogin(values).then((response) => {
+        setLoginResponse(response);
+        Utils.setBearerToken(response.data.token);
+        setErrors({});
+        props.succeed();
+      }, (err) => {
+        err.response && setLoginResponse(err.response.data);
+      });
+    }).catch(err => {
+      let reducedErrors = err.inner.reduce(function(obj, e) {
+        obj[e.path] = e;
+        return obj;
+      }, {});
+      setErrors(reducedErrors)
+    })
+  }
+
+  const schema = Yup.object().shape({
+    email: Yup.string()
+      .email()
+      .required('Required'),
+    password: Yup.string()
+      .required('Required')
+  })
 
   return (
     <Modal
@@ -35,6 +69,7 @@ const LoginModal = (props) => {
           margin="dense"
           variant="outlined"
         />
+        <ErrorMsg>{errors.email && errors.email.message}</ErrorMsg>
         <br/>
         <TextField
           id="standard-name"
@@ -45,7 +80,11 @@ const LoginModal = (props) => {
           margin="dense"
           variant="outlined"
         />
-        <Button style={{float: 'right', marginTop: '10px'}}>Login</Button>
+        <ErrorMsg>{errors.password && errors.password.message}</ErrorMsg>
+        <ErrorMsg>
+          {loginResponse && loginResponse.error}
+        </ErrorMsg>
+        <Button style={{float: 'right', marginTop: '10px'}} onClick={handleSubmit}>Login</Button>
       </StyledPaper>
     </Modal>
   )
