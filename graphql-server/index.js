@@ -49,7 +49,7 @@ app.post('/login', userController.postLogin)
 app.post('/forgot', userController.postForgot);
 app.post('/reset', userController.postReset)
 app.post('/updatePassword', passport.authenticate('jwt', { session: false }), userController.postUpdatePassword)
-
+app.post('/updateProfile', passport.authenticate('jwt', { session: false }), userController.postUpdateProfile)
 app.post('/deleteAccount', passport.authenticate('jwt', {session: false}), userController.postDeleteAccount)
 
 app.post('/auth/facebook', function(req, res, next){

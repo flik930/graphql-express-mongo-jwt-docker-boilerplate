@@ -148,7 +148,7 @@ exports.postUpdatePassword = (req, res, next) => {
   const error = req.validationErrors();
 
   if (error) {
-    return res.send({error});
+    return res.status(400).send({error});
   }
 
   User.findById(req.user.id, (err, user) => {
@@ -157,6 +157,24 @@ exports.postUpdatePassword = (req, res, next) => {
     user.save((err) => {
       if (err) { return next(err); }
       res.send({'success': true, msg: 'Password has been changed.' });
+    });
+  });
+};
+
+exports.postUpdateProfile = (req, res, next) => {
+
+  const error = req.validationErrors();
+
+  if (error) {
+    return res.send({error});
+  }
+
+  User.findById(req.user.id, (err, user) => {
+    if (err) { return next(err); }
+    user.displayName = req.body.displayName;
+    user.save((err) => {
+      if (err) { return next(err); }
+      res.send({'success': true, msg: 'Profile has been updated.' });
     });
   });
 };

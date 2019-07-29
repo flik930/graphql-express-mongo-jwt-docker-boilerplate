@@ -8,6 +8,7 @@ const MemberService = {
   facebookLogin: (params) => Post({url: config.baseUrl + 'auth/facebook', params}),
   forgotPassword: (params) => Post({url: config.baseUrl + 'forgot', params}),
   resetPassword: (params) => Post({url: config.baseUrl + 'reset', params}),
+  updateProfile: (params) => Post({url: config.baseUrl + 'updateProfile', params}),
   getUserInfo: () => getGqlClient().query({
     query: gql`
       {

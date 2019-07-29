@@ -19,8 +19,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { view, store } from 'react-easy-state'
 import Icon from '@material-ui/core/Icon';
+import { withRouter } from "react-router-dom";
 
-function App() {
+function App(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleAvatarClick = (event) => {
@@ -36,6 +37,7 @@ function App() {
     globalStore.userInfo = null;
     globalStore.loggedIn = false;
     setAnchorEl(null);
+    props.history.push(`/`);
   }
 
   const [modalState, setModalState] = useState({
@@ -85,6 +87,11 @@ function App() {
     })
   }
 
+  const handleProfileClick = () => {
+    handleMenuClose();
+    props.history.push(`/profile`)
+  }
+
   useEffect(() => {
     if (Utils.getBearerToken()) {
       globalStore.loggedIn = true;
@@ -121,7 +128,7 @@ function App() {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                 >
-                  <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+                  <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
                   <MenuItem onClick={logout}>Logout</MenuItem>
                 </Menu>
               </>
@@ -137,7 +144,7 @@ function App() {
   );
 }
 
-export default hot(module)(view(App));
+export default hot(module)(withRouter(view(App)));
 
 const StyledTypography = styled(Typography)`
   flex-grow: 1;

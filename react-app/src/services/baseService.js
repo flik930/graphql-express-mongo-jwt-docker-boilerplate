@@ -29,7 +29,8 @@ export const getGqlClient = () => {
 }
 
 const getDefaultOptions = () => {
-  let token = localStorage.getItem('accessToken');
+  let token = Utils.getBearerToken();
+  console.log(token)
   return {
     baseURL: config.baseURL,
     headers: {
@@ -45,6 +46,7 @@ const getDefaultOptions = () => {
 // If instance is not set, create a new instance
 const getInstance = () => {
   if (!instance) {
+    console.log('hit')
     const defaultOptions = getDefaultOptions();
     instance = axios.create(defaultOptions);
   }
