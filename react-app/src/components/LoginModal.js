@@ -85,6 +85,7 @@ const LoginModal = (props) => {
           {loginResponse && loginResponse.error}
         </ErrorMsg>
         <Button style={{float: 'right', marginTop: '10px'}} onClick={handleSubmit}>Login</Button>
+        <Button style={{float: 'right', marginTop: '10px'}} onClick={props.forgotPasswordClick}>Forget Password</Button>
       </StyledPaper>
     </Modal>
   )

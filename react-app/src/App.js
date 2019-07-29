@@ -7,7 +7,8 @@ import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import LoginModal from './components/LoginModal';
 import SignupModal from './components/SignupModal';
-import EmailConfirmationModal from './components/EmailConfirmationModal';
+import GlobalMessageModal from './components/GlobalMessageModal';
+import ForgotPasswordModal from './components/ForgotPasswordModal';
 import {hot} from 'react-hot-loader';
 import FacebookLogin from 'react-facebook-login';
 import MemberService from './services/memberService';
@@ -17,6 +18,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { view, store } from 'react-easy-state'
+import Icon from '@material-ui/core/Icon';
 
 function App() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -39,8 +41,10 @@ function App() {
   const [modalState, setModalState] = useState({
     login: false,
     signup: false,
-    emailConfirmation: false
+    globalMessage: false
   });
+
+  const [message, setMessage] = useState();
 
   const loginSucceed = () => {
     setModalState({...modalState, login: false});
@@ -48,7 +52,17 @@ function App() {
   }
 
   const signupSucceed = () => {
-    setModalState({...modalState, emailConfirmation: true, signup: false});
+    setModalState({...modalState, globalMessage: true, signup: false});
+    setMessage(<><Icon style={{color: 'green'}}> done-outline</Icon>Signup Succeed, Please check your email for verification! Thanks.</>)
+  }
+
+  const forgotPasswordSucceed = () => {
+    setModalState({...modalState, forgotPassword: false, globalMessage: true});
+    setMessage(<>Please check your email for resting the password! Thanks.</>)
+  }
+
+  const forgotPasswordClick = () => {
+    setModalState({...modalState, login: false, forgotPassword: true});
   }
 
   const getUserInfo = async () => {
@@ -113,9 +127,10 @@ function App() {
 
         </Toolbar>
       </AppBar>
-      <LoginModal succeed={loginSucceed} open={modalState.login} onClose={() => setModalState({...modalState, login: false})}/>
+      <LoginModal succeed={loginSucceed} open={modalState.login} onClose={() => setModalState({...modalState, login: false})} forgotPasswordClick={forgotPasswordClick}/>
       <SignupModal succeed={signupSucceed} open={modalState.signup} onClose={() => setModalState({...modalState, signup: false})}/>
-      <EmailConfirmationModal open={modalState.emailConfirmation} onClose={() => setModalState({...modalState, emailConfirmation: false})} ></EmailConfirmationModal>
+      <ForgotPasswordModal succeed={forgotPasswordSucceed} open={modalState.forgotPassword} onClose={() => setModalState({...modalState, forgotPassword: false})} ></ForgotPasswordModal>
+      <GlobalMessageModal open={modalState.globalMessage} onClose={() => setModalState({...modalState, globalMessage: false})}>{message}</GlobalMessageModal>
     </div>
   );
 }
