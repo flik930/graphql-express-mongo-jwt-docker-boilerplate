@@ -91,9 +91,9 @@ exports.postSignup = (req, res, next) => {
         });
         const mailOptions = {
           to: user.email,
-          from: 'hackathon@starter.com',
+          from: process.env.SYSTEM_EMAIL,
           subject: 'Email Verification',
-          text: `Hello,\n\n please click link below to verify your account ${user.email}.\n\n http://${req.headers.host}/verify/${emailVerificationToken}\n\n`
+          text: `Hello,\n\n please click link below to verify your account ${user.email}.\n\n ${process.env.CLIENT_URL}/verify/${emailVerificationToken}\n\n`
         };
         return transporter.sendMail(mailOptions)
           .catch((err) => {
@@ -180,12 +180,11 @@ exports.postDeleteAccount = (req, res, next) => {
  */
 exports.postReset = (req, res, next) => {
   req.assert('password', 'Password must be at least 4 characters long.').len(4);
-  req.assert('confirmPassword', 'Passwords must match.').equals(req.body.password.toString());
 
   const error = req.validationErrors();
 
   if (error) {
-    res.send({error});
+    res.status(400).send({error});
   }
 
   const resetPassword = () =>
@@ -194,7 +193,7 @@ exports.postReset = (req, res, next) => {
       .where('passwordResetExpires').gt(Date.now())
       .then((user) => {
         if (!user) {
-          return res.send({'error': 'Password reset token is invalid or has expired.' });
+          return res.status(400).send({'error': 'Password reset token is invalid or has expired.' });
         }
         user.password = req.body.password;
         user.passwordResetToken = undefined;
@@ -216,7 +215,7 @@ exports.postReset = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
+      from: process.env.SYSTEM_EMAIL,
       subject: 'Your Hackathon Starter password has been changed',
       text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
     };
@@ -296,12 +295,12 @@ exports.postForgot = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
+      from: process.env.SYSTEM_EMAIL,
       subject: 'Reset your password on Hackathon Starter',
-      text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
-        Please click on the following link, or paste this into your browser to complete the process:\n\n
-        http://${req.headers.host}/reset/${token}\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`
+      html: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.<br/><br/>
+        Please click on the following link, or paste this into your browser to complete the process:<br/>
+        <a href="${process.env.CLIENT_URL}${process.env.CLIENT_RESET_PATH}${token}">${process.env.CLIENT_URL}${process.env.CLIENT_RESET_PATH}${token}</a><br/><br/>
+        If you did not request this, please ignore this email and your password will remain unchanged.<br/>`
     };
     return transporter.sendMail(mailOptions)
       .then(() => {

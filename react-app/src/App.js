@@ -41,7 +41,8 @@ function App() {
   const [modalState, setModalState] = useState({
     login: false,
     signup: false,
-    globalMessage: false
+    globalMessage: false,
+    forgotPassword: false
   });
 
   const [message, setMessage] = useState();
@@ -54,6 +55,7 @@ function App() {
   const signupSucceed = () => {
     setModalState({...modalState, globalMessage: true, signup: false});
     setMessage(<><Icon style={{color: 'green'}}> done-outline</Icon>Signup Succeed, Please check your email for verification! Thanks.</>)
+    getUserInfo();
   }
 
   const forgotPasswordSucceed = () => {

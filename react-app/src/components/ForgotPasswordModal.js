@@ -12,8 +12,7 @@ import Utils from '../utils/utils';
 const ForgotPasswordModal = (props) => {
 
   const [values, setValues] = React.useState({
-    email: '',
-    password: ''
+    email: ''
   });
 
   const handleChange = name => event => {
@@ -50,8 +49,6 @@ const ForgotPasswordModal = (props) => {
 
   return (
     <Modal
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
       open={props.open}
       onClose={props.onClose}
     >
