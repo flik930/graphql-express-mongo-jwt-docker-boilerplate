@@ -45,12 +45,12 @@ const Profile = (props) => {
   return (
     <StyledPaper>
       <Typography variant="h6" id="modal-title">
-        Profile
+        Profile <Button style={{float: 'right'}}>Edit</Button>
       </Typography>
       <TextField
-        id="standard-name"
+        id="displayName"
         label="Display Name"
-        value={values.email}
+        value={values.displayName}
         onChange={handleChange('displayName')}
         margin="dense"
         variant="outlined"
