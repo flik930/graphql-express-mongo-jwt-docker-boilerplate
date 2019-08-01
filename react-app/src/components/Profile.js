@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
@@ -6,10 +6,11 @@ import TextField from '@material-ui/core/TextField';
 import MemberService from '../services/memberService';
 import * as Yup from 'yup';
 import ErrorMsg from './common/ErrorMsg';
+import EditButton from './common/EditButton';
 
 const Profile = (props) => {
 
-  const [values, setValues] = React.useState({
+  const [values, setValues] = useState({
     displayName: ''
   });
 
@@ -17,8 +18,9 @@ const Profile = (props) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  const [errors, setErrors] = React.useState({});
-  const [response, setResponse] = React.useState({});
+  const [errors, setErrors] = useState({});
+  const [response, setResponse] = useState({});
+  const [editMode, setEditMode] = useState(false);
 
   const handleSubmit = () => {
     schema.validate(values, {abortEarly: false}).then((valid) => {
@@ -45,17 +47,34 @@ const Profile = (props) => {
   return (
     <StyledPaper>
       <Typography variant="h6" id="modal-title">
-        Profile <Button style={{float: 'right'}}>Edit</Button>
+        Profile <EditButton editMode={editMode} setEditMode={setEditMode} style={{float: 'right'}}/>
       </Typography>
       <TextField
-        id="displayName"
         label="Display Name"
         value={values.displayName}
         onChange={handleChange('displayName')}
+        error={errors.displayName}
+        helperText={errors.displayName && errors.displayName.message}
+        InputProps={{
+          readOnly: !editMode,
+        }}
         margin="dense"
         variant="outlined"
       />
-      <ErrorMsg>{errors.displayName && errors.displayName.message}</ErrorMsg>
+      <TextField
+        label="Introduction"
+        value={values.introduction}
+        onChange={handleChange('introduction')}
+        error={errors.displayName && errors.displayName.message}
+        helperText={errors.displayName && errors.displayName.message}
+        multiline={true}
+        rows={4}
+        InputProps={{
+          readOnly: !editMode,
+        }}
+        margin="dense"
+        variant="outlined"
+      />
       <br/>
       <ErrorMsg>
         {response && response.error}
