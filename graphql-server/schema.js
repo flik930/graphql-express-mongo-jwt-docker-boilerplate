@@ -12,9 +12,30 @@ export default `
     createdAt: DateTime!
     updatedAt: DateTime
     email: String!
+    name: String!
+    gender: Boolean!
+    introduction: String!
   }
 
   type Query {
-    me: User
+    me: User!
+    profile: Profile!
+  }
+
+  type Mutation {
+    updateProfile(profile: ProfileInput): Profile
+  }
+
+  input ProfileInput {
+    name: String!
+    gender: Boolean!
+    introduction: String!
+  }
+
+  type Profile {
+    _id: ID!
+    name: String!
+    gender: Boolean!
+    introduction: String!
   }
 `;
