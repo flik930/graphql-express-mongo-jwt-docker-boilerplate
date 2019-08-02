@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
@@ -7,16 +7,38 @@ import MemberService from '../services/memberService';
 import * as Yup from 'yup';
 import ErrorMsg from './common/ErrorMsg';
 import EditButton from './common/EditButton';
+import { useQuery } from "react-apollo-hooks";
+import { gql } from "apollo-boost";
 
 const Profile = (props) => {
 
   const [values, setValues] = useState({
-    displayName: ''
+    displayName: '',
+    introduction: '',
+    gender: ''
   });
 
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value });
   };
+
+  const GET_PROFILE = gql`
+    {
+      profile {
+        displayName: name
+        introduction
+        gender
+      }
+    }
+  `
+
+  const { data, loading } = useQuery(GET_PROFILE)
+
+  useEffect(() => {
+    if (data) {
+      setValues(data.profile);
+    }
+  }, [data])
 
   const [errors, setErrors] = useState({});
   const [response, setResponse] = useState({});
@@ -65,8 +87,8 @@ const Profile = (props) => {
         label="Introduction"
         value={values.introduction}
         onChange={handleChange('introduction')}
-        error={errors.displayName && errors.displayName.message}
-        helperText={errors.displayName && errors.displayName.message}
+        error={errors.introduction && errors.introduction.message}
+        helperText={errors.introduction && errors.introduction.message}
         multiline={true}
         rows={4}
         InputProps={{
