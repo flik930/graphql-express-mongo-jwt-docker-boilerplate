@@ -12,9 +12,9 @@ export default `
     createdAt: DateTime!
     updatedAt: DateTime
     email: String!
-    name: String!
-    gender: Boolean!
-    introduction: String!
+    name: String
+    gender: Boolean
+    introduction: String
   }
 
   type Query {
@@ -27,15 +27,15 @@ export default `
   }
 
   input ProfileInput {
-    name: String!
-    gender: Boolean!
-    introduction: String!
+    name: String
+    gender: Boolean
+    introduction: String
   }
 
   type Profile {
     _id: ID!
-    name: String!
-    gender: Boolean!
-    introduction: String!
+    name: String
+    gender: Boolean
+    introduction: String
   }
 `;

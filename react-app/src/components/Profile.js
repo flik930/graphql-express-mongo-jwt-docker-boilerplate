@@ -6,8 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import MemberService from '../services/memberService';
 import * as Yup from 'yup';
 import ErrorMsg from './common/ErrorMsg';
-import EditButton from './common/EditButton';
-import { useQuery } from "react-apollo-hooks";
+import { useQuery, useMutation } from "react-apollo-hooks";
 import { gql } from "apollo-boost";
 
 const Profile = (props) => {
@@ -35,14 +34,29 @@ const Profile = (props) => {
   const { data, loading } = useQuery(GET_PROFILE)
 
   useEffect(() => {
-    if (data) {
+    if (data && data.profile) {
       setValues(data.profile);
     }
   }, [data])
 
+
+  const UPDATE_PROFILE = gql`
+    mutation UpdateProfile($profile: ProfileInput!) {
+      updateProfile(profile: $profile) {
+        name
+      }
+    }
+  `
+
+  const [updateProfile, mutationResponse] = useMutation(UPDATE_PROFILE, {
+    variables: {profile: {
+      name: values.displayName,
+      introduction: values.introduction
+    }}
+  })
+
   const [errors, setErrors] = useState({});
   const [response, setResponse] = useState({});
-  const [editMode, setEditMode] = useState(false);
 
   const handleSubmit = () => {
     schema.validate(values, {abortEarly: false}).then((valid) => {
@@ -69,7 +83,7 @@ const Profile = (props) => {
   return (
     <StyledPaper>
       <Typography variant="h6" id="modal-title">
-        Profile <EditButton editMode={editMode} setEditMode={setEditMode} style={{float: 'right'}}/>
+        Profile
       </Typography>
       <TextField
         label="Display Name"
@@ -77,9 +91,6 @@ const Profile = (props) => {
         onChange={handleChange('displayName')}
         error={errors.displayName}
         helperText={errors.displayName && errors.displayName.message}
-        InputProps={{
-          readOnly: !editMode,
-        }}
         margin="dense"
         variant="outlined"
       />
@@ -91,9 +102,6 @@ const Profile = (props) => {
         helperText={errors.introduction && errors.introduction.message}
         multiline={true}
         rows={4}
-        InputProps={{
-          readOnly: !editMode,
-        }}
         margin="dense"
         variant="outlined"
       />
@@ -101,7 +109,7 @@ const Profile = (props) => {
       <ErrorMsg>
         {response && response.error}
       </ErrorMsg>
-      <Button style={{float: 'right', marginTop: '10px'}} onClick={handleSubmit}>Update</Button>
+      <Button style={{float: 'right', marginTop: '10px'}} onClick={updateProfile}>Update</Button>
     </StyledPaper>
   )
 }
