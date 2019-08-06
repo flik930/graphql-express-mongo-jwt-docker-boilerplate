@@ -20,6 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { view, store } from 'react-easy-state'
 import Icon from '@material-ui/core/Icon';
 import { withRouter } from "react-router-dom";
+import { clearToken } from './services/baseService';
 
 function App(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -34,6 +35,7 @@ function App(props) {
 
   const logout = () => {
     Utils.setBearerToken('');
+    clearToken();
     globalStore.userInfo = null;
     globalStore.loggedIn = false;
     setAnchorEl(null);
@@ -89,7 +91,7 @@ function App(props) {
 
   const handleProfileClick = () => {
     handleMenuClose();
-    props.history.push(`/profile`)
+    props.history.replace(`/profile`)
   }
 
   useEffect(() => {

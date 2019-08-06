@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   linkedin: String,
   steam: String,
   tokens: Array,
-  name: String,
+  name: {type: String, trim: true, index: true, unique: true, sparse: true},
   gender: Boolean,
   location: String,
   website: String,

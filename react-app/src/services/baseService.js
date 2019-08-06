@@ -26,6 +26,11 @@ export const getGqlClient = () => {
   return gqlInstance;
 }
 
+export const clearToken = () => {
+  gqlInstance = undefined;
+  token = undefined;
+}
+
 const getDefaultOptions = () => {
   let token = Utils.getBearerToken();
   return {
