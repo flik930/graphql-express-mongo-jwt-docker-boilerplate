@@ -13,11 +13,21 @@ import resolvers from "resolvers";
 import jwt from "jsonwebtoken";
 import User from "models/User";
 import axios from "axios";
+import { AuthenticationError } from "apollo-server-core";
 
 mongoose.connect('mongodb://' + process.env.MONGODB_USERNAME + ':' + process.env.MONGODB_PASSWORD + '@mongodb:27017/test?authSource=admin', { useNewUrlParser: true }).then(() => console.log('MongoDB Connected'))
 .catch(err => console.log(err));
 
-const server = new GraphQLServer({ typeDefs, resolvers, pretty: true, context: async (req) => {
+const authenticate = async (resolve, root, args, context, info) => {
+  if (!context.user) {
+    return new AuthenticationError("Not authorised");
+  } else {
+    const result = await resolve(root, args, context, info);
+    return result;
+  }
+}
+
+const server = new GraphQLServer({ typeDefs, resolvers, pretty: true, middlewares: [authenticate], context: async (req) => {
   if (req.request.headers && req.request.headers.authorization) {
     const token = req.request.headers.authorization.split(' ')[1];
     const _user = jwt.decode(token, process.env.SERVER_SECRET);
@@ -29,7 +39,7 @@ const server = new GraphQLServer({ typeDefs, resolvers, pretty: true, context: a
     }
     return {user};
   } else {
-    return {user: null}
+    return {user: null};
   }
 }});
 server.express.use(passport.initialize());
@@ -52,19 +62,25 @@ app.post('/updatePassword', passport.authenticate('jwt', { session: false }), us
 app.post('/updateProfile', passport.authenticate('jwt', { session: false }), userController.postUpdateProfile)
 app.post('/deleteAccount', passport.authenticate('jwt', {session: false}), userController.postDeleteAccount)
 
-app.post('/auth/facebook', function(req, res, next){
+app.post('/auth/facebook-token', function(req, res, next){
   axios.get('https://graph.facebook.com/me/?fields=email,name&access_token=' + req.body.token).then((result) => {
     const matchObj = {$or: [{facebook: result.data.id}, {email: result.data.email}]};
     const updatObj = {facebook: result.data.id, email: result.data.email, name: result.data.name};
-    User.findOneAndUpdate(matchObj, updatObj, {useFindAndModify: false, new: true, upsert: true}, (errors, user) => {
-      if(errors) res.send({errors})
-      const token = userController.genJWT({_id: user._id});
-      res.send({success: true, token})
+    User.findOne(matchObj, async (error, user) => {
+      if(error) res.status(400).send({error})
+      if (user) {
+        const token = userController.genJWT({_id: user._id});
+        res.send({success: true, token});
+      } else {
+        const user = await User.create(updatObj);
+        const token = userController.genJWT({_id: user._id});
+        res.send({success: true, token});
+      }
     })
-  }).catch(function (errors) {
+  }).catch(function (error) {
     // handle error
-    console.log('errors', errors);
-    res.send({errors});
+    console.log('error', error);
+    res.send({error});
   })
 });
 

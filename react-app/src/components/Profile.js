@@ -9,8 +9,26 @@ import ErrorMsg from './common/ErrorMsg';
 import { useQuery, useMutation } from "react-apollo-hooks";
 import { gql } from "apollo-boost";
 
-const Profile = (props) => {
+const UPDATE_PROFILE = gql`
+  mutation UpdateProfile($profile: ProfileInput!) {
+    updateProfile(profile: $profile) {
+      displayName: name
+      introduction
+    }
+  }
+`
 
+const GET_PROFILE = gql`
+{
+  profile {
+    displayName: name
+    introduction
+    gender
+  }
+}
+`
+
+const Profile = () => {
   const [values, setValues] = useState({
     displayName: '',
     introduction: '',
@@ -21,16 +39,6 @@ const Profile = (props) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  const GET_PROFILE = gql`
-    {
-      profile {
-        displayName: name
-        introduction
-        gender
-      }
-    }
-  `
-
   const { data, loading } = useQuery(GET_PROFILE)
 
   useEffect(() => {
@@ -40,14 +48,6 @@ const Profile = (props) => {
   }, [data])
 
 
-  const UPDATE_PROFILE = gql`
-    mutation UpdateProfile($profile: ProfileInput!) {
-      updateProfile(profile: $profile) {
-        name
-      }
-    }
-  `
-
   const [updateProfile, mutationResponse] = useMutation(UPDATE_PROFILE, {
     variables: {profile: {
       name: values.displayName,
@@ -55,18 +55,18 @@ const Profile = (props) => {
     }}
   })
 
+  useEffect(() => {
+    if (mutationResponse && mutationResponse.data) {
+      setValues(mutationResponse.data.updateProfile);
+    }
+  }, [mutationResponse])
+
   const [errors, setErrors] = useState({});
   const [response, setResponse] = useState({});
 
   const handleSubmit = () => {
     schema.validate(values, {abortEarly: false}).then((valid) => {
-      valid && MemberService.updateProfile(values).then((response) => {
-        setResponse(response);
-        setErrors({});
-        //todo success
-      }, (err) => {
-        err.response && setResponse(err.response.data);
-      });
+      valid && updateProfile();
     }).catch(err => {
       let reducedErrors = err.inner.reduce(function(obj, e) {
         obj[e.path] = e;
@@ -109,7 +109,7 @@ const Profile = (props) => {
       <ErrorMsg>
         {response && response.error}
       </ErrorMsg>
-      <Button style={{float: 'right', marginTop: '10px'}} onClick={updateProfile}>Update</Button>
+      <Button style={{float: 'right', marginTop: '10px'}} onClick={handleSubmit}>Update</Button>
     </StyledPaper>
   )
 }

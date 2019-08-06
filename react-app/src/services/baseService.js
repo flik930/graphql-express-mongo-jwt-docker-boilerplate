@@ -10,27 +10,24 @@ let gqlInstance;
 let token;
 
 export const getGqlClient = () => {
-  if (!gqlInstance) {
-    if (!token) {
-      token = Utils.getBearerToken();
-    }
-    gqlInstance = new ApolloClient({
-      uri: config.graphQLuri,
-      request: async (operation) => {
-        operation.setContext({
-          headers: {
-            authorization: `Bearer ${token}`
-          }
-        })
-      }
-    });
+  if (!token) {
+    token = Utils.getBearerToken();
   }
+  gqlInstance = new ApolloClient({
+    uri: config.graphQLuri,
+    request: async (operation) => {
+      operation.setContext({
+        headers: {
+          authorization: !!token ? `Bearer ${token}` : ''
+        }
+      })
+    }
+  });
   return gqlInstance;
 }
 
 const getDefaultOptions = () => {
   let token = Utils.getBearerToken();
-  console.log(token)
   return {
     baseURL: config.baseURL,
     headers: {
@@ -46,7 +43,6 @@ const getDefaultOptions = () => {
 // If instance is not set, create a new instance
 const getInstance = () => {
   if (!instance) {
-    console.log('hit')
     const defaultOptions = getDefaultOptions();
     instance = axios.create(defaultOptions);
   }
