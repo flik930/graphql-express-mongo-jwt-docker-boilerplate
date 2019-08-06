@@ -28,7 +28,7 @@ const GET_PROFILE = gql`
 }
 `
 
-const Profile = () => {
+const Profile = (props) => {
   const [values, setValues] = useState({
     displayName: '',
     introduction: '',
@@ -39,7 +39,11 @@ const Profile = () => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  const { data, loading } = useQuery(GET_PROFILE)
+  const { data, loading, refetch } = useQuery(GET_PROFILE)
+
+  useEffect(() => {
+    refetch()
+  }, [props.history.length])
 
   useEffect(() => {
     if (data && data.profile) {

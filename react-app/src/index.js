@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import ResetPage from "./components/ResetPage";
 import Profile from "./components/Profile";
 import { ApolloProvider } from 'react-apollo';
@@ -16,9 +16,9 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <ApolloHooksProvider client={client}>
       <BrowserRouter>
-        <Route path="/" excat component={App} />
+        <Route path="/" excat component={props => <App {...props}/>} />
         <Route path="/reset/:token" component={ResetPage} />
-        <Route path="/profile" component={Profile} />
+        <Route path="/profile" component={props => <Profile {...props}/>} />
       </BrowserRouter>
     </ApolloHooksProvider>
   </ApolloProvider>

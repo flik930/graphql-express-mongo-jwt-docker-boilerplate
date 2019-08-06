@@ -91,7 +91,7 @@ function App(props) {
 
   const handleProfileClick = () => {
     handleMenuClose();
-    props.history.replace(`/profile`)
+    props.history.push(`/profile`)
   }
 
   useEffect(() => {
