@@ -60,7 +60,8 @@ const Profile = (props) => {
   const [updateProfile, mutationResponse] = useMutation(UPDATE_PROFILE, {
     variables: {profile: {
       name: values.displayName,
-      introduction: values.introduction
+      introduction: values.introduction,
+      pictureUrl: values.pictureUrl
     }},
 
   })
