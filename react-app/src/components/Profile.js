@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
 import MemberService from '../services/memberService';
 import * as Yup from 'yup';
 import ErrorMsg from './common/ErrorMsg';
@@ -15,7 +16,8 @@ const UPDATE_PROFILE = gql`
   mutation UpdateProfile($profile: ProfileInput!) {
     updateProfile(profile: $profile) {
       displayName: name
-      introduction
+      introduction,
+      pictureUrl
     }
   }
 `
@@ -24,7 +26,8 @@ const GET_PROFILE = gql`
 {
   profile {
     displayName: name
-    introduction
+    introduction,
+    pictureUrl
     gender
   }
 }
@@ -98,26 +101,45 @@ const Profile = (props) => {
       <Typography variant="h6" id="modal-title">
         Profile
       </Typography>
-      <TextField
-        label="Display Name"
-        value={values.displayName}
-        onChange={handleChange('displayName')}
-        error={errors.displayName}
-        helperText={errors.displayName && errors.displayName.message}
-        margin="dense"
-        variant="outlined"
-      />
-      <TextField
-        label="Introduction"
-        value={values.introduction}
-        onChange={handleChange('introduction')}
-        error={errors.introduction && errors.introduction.message}
-        helperText={errors.introduction && errors.introduction.message}
-        multiline={true}
-        rows={4}
-        margin="dense"
-        variant="outlined"
-      />
+      <Grid
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
+        <TextField
+          fullWidth={true}
+          label="Display Name"
+          value={values.displayName}
+          onChange={handleChange('displayName')}
+          error={errors.displayName}
+          helperText={errors.displayName && errors.displayName.message}
+          margin="dense"
+          variant="outlined"
+        />
+        <TextField
+          fullWidth={true}
+          label="Introduction"
+          value={values.introduction}
+          onChange={handleChange('introduction')}
+          error={errors.introduction && errors.introduction.message}
+          helperText={errors.introduction && errors.introduction.message}
+          multiline={true}
+          rows={4}
+          margin="dense"
+          variant="outlined"
+        />
+        <TextField
+          fullWidth={true}
+          label="Picture Url"
+          value={values.pictureUrl}
+          onChange={handleChange('pictureUrl')}
+          error={errors.pictureUrl && errors.pictureUrl.message}
+          helperText={errors.pictureUrl && errors.pictureUrl.message}
+          margin="dense"
+          variant="outlined"
+        />
+      </Grid>
       <br/>
       <ErrorMsg>
         {response && response.error && response.error.graphQLErrors[0].message}
@@ -135,7 +157,7 @@ const StyledPaper = styled('div')`
   background: white;
   transform: translate(-50%, -50%);
   position: absolute;
-  width: 200px;
+  width: 300px;
   padding: 30px;
   outline: none;
 `

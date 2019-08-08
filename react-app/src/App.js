@@ -80,7 +80,8 @@ function App(props) {
   const getUserInfo = async () => {
     try {
       globalStore.loggedIn = true;
-      globalStore.userInfo = await MemberService.getUserInfo();
+      const result = await MemberService.getUserInfo();
+      globalStore.userInfo = result.data.me;
     } catch (e) {
       globalStore.loggedIn = false;
       globalStore.userInfo = null;
@@ -112,7 +113,7 @@ function App(props) {
       <AppBar position="static" color="default">
         <Toolbar>
           <StyledTypography variant="h6" color="inherit">
-            Photos
+            Logo
           </StyledTypography>
           {
             !globalStore.loggedIn ?
@@ -120,7 +121,7 @@ function App(props) {
                 <FacebookLogin
                   appId="2253032208279352"
                   autoLoad={false}
-                  fields="name,email,picture"
+                  fields="name,email"
                   size="small"
                   callback={responseFacebook} />
                 <Button color="inherit" onClick={() => setModalState({...modalState, login: true})}>Login</Button> /
@@ -128,7 +129,10 @@ function App(props) {
               </>
             :
               <>
-                <Avatar src={process.env.PUBLIC_URL + '/images/default_avatar.png'} onClick={handleAvatarClick}/>
+                <Typography style={{marginRight: 10}}>
+                  {globalStore.userInfo && (globalStore.userInfo.name || globalStore.userInfo.email)}
+                </Typography>
+                <Avatar src={process.env.PUBLIC_URL + (globalStore.userInfo && (globalStore.userInfo.pictureUrl || '/images/default_avatar.png'))} onClick={handleAvatarClick}/>
                 <Menu
                   id="simple-menu"
                   anchorEl={anchorEl}

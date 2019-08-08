@@ -15,6 +15,7 @@ export default `
     name: String
     gender: Boolean
     introduction: String
+    pictureUrl: String
   }
 
   type Query {
@@ -30,6 +31,7 @@ export default `
     name: String
     gender: Boolean
     introduction: String
+    pictureUrl: String
   }
 
   type Profile {
@@ -37,5 +39,6 @@ export default `
     name: String
     gender: Boolean
     introduction: String
+    pictureUrl: String
   }
 `;

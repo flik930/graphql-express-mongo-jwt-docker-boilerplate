@@ -63,16 +63,18 @@ app.post('/updateProfile', passport.authenticate('jwt', { session: false }), use
 app.post('/deleteAccount', passport.authenticate('jwt', {session: false}), userController.postDeleteAccount)
 
 app.post('/auth/facebook-token', function(req, res, next){
-  axios.get('https://graph.facebook.com/me/?fields=email,name&access_token=' + req.body.token).then((result) => {
+  axios.get('https://graph.facebook.com/me/?fields=email,name&access_token=' + req.body.token).then(async (result) => {
+    const picture = await axios.get('https://graph.facebook.com/v4.0/me/picture?height=200&redirect=0&access_token=' + req.body.token);
     const matchObj = {$or: [{facebook: result.data.id}, {email: result.data.email}]};
-    const updatObj = {facebook: result.data.id, email: result.data.email, name: result.data.name};
+    const updateObj = {facebook: result.data.id, email: result.data.email, name: result.data.name, pictureUrl: picture.data.data.url};
+
     User.findOne(matchObj, async (error, user) => {
       if(error) res.status(400).send({error})
       if (user) {
         const token = userController.genJWT({_id: user._id});
         res.send({success: true, token});
       } else {
-        const user = await User.create(updatObj);
+        const user = await User.create(updateObj);
         const token = userController.genJWT({_id: user._id});
         res.send({success: true, token});
       }

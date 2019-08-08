@@ -13,7 +13,9 @@ const MemberService = {
     query: gql`
       {
         me {
+          name
           email
+          pictureUrl
         }
       }
     `
