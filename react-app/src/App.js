@@ -20,7 +20,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { view, store } from 'react-easy-state'
 import Icon from '@material-ui/core/Icon';
 import { withRouter } from "react-router-dom";
-import { clearToken } from './services/baseService';
+import { clearServiceInstance } from './services/baseService';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+toast.configure({
+  autoClose: 2000
+});
 
 function App(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -35,7 +41,7 @@ function App(props) {
 
   const logout = () => {
     Utils.setBearerToken('');
-    clearToken();
+    clearServiceInstance();
     globalStore.userInfo = null;
     globalStore.loggedIn = false;
     setAnchorEl(null);
@@ -138,6 +144,7 @@ function App(props) {
 
         </Toolbar>
       </AppBar>
+      <ToastContainer />
       <LoginModal succeed={loginSucceed} open={modalState.login} onClose={() => setModalState({...modalState, login: false})} forgotPasswordClick={forgotPasswordClick}/>
       <SignupModal succeed={signupSucceed} open={modalState.signup} onClose={() => setModalState({...modalState, signup: false})}/>
       <ForgotPasswordModal succeed={forgotPasswordSucceed} open={modalState.forgotPassword} onClose={() => setModalState({...modalState, forgotPassword: false})} ></ForgotPasswordModal>

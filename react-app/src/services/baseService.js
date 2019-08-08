@@ -26,9 +26,10 @@ export const getGqlClient = () => {
   return gqlInstance;
 }
 
-export const clearToken = () => {
+export const clearServiceInstance = () => {
   gqlInstance = undefined;
   token = undefined;
+  instance = undefined;
 }
 
 const getDefaultOptions = () => {

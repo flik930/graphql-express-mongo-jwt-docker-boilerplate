@@ -8,6 +8,8 @@ import * as Yup from 'yup';
 import ErrorMsg from './common/ErrorMsg';
 import { useQuery, useMutation } from "react-apollo-hooks";
 import { gql } from "apollo-boost";
+import { toast } from 'react-toastify';
+import Utils from '../utils/utils';
 
 const UPDATE_PROFILE = gql`
   mutation UpdateProfile($profile: ProfileInput!) {
@@ -56,12 +58,19 @@ const Profile = (props) => {
     variables: {profile: {
       name: values.displayName,
       introduction: values.introduction
-    }}
+    }},
+
   })
 
   useEffect(() => {
-    if (mutationResponse && mutationResponse.data) {
+    if (mutationResponse.error) {
+      mutationResponse.error.graphQLErrors.map(({message}) => {
+        toast.error(message);
+      })
+      setResponse(mutationResponse);
+    } else if (mutationResponse && mutationResponse.data) {
       setValues(mutationResponse.data.updateProfile);
+      toast.success("Profile Updated")
     }
   }, [mutationResponse])
 
@@ -111,7 +120,7 @@ const Profile = (props) => {
       />
       <br/>
       <ErrorMsg>
-        {response && response.error}
+        {response && response.error && response.error.graphQLErrors[0].message}
       </ErrorMsg>
       <Button style={{float: 'right', marginTop: '10px'}} onClick={handleSubmit}>Update</Button>
     </StyledPaper>

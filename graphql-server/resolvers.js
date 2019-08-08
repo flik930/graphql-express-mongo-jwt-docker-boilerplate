@@ -14,7 +14,13 @@ export default {
   },
   Mutation: {
     updateProfile: async (_, {profile}, context) => {
-      return await User.findOneAndUpdate({_id: context.user.id}, profile, {new: true})
+      const user = await User.findOne({_id: context.user.id});
+      const result = await User.findOne({name: {$regex: new RegExp(profile.name, "i")}, _id: {$ne: user._id}});
+      if (result) {
+        return new UserInputError("Name is already taken");
+      } else {
+        return await User.findOneAndUpdate({_id: context.user.id}, profile, {new: true})
+      }
     }
   },
   DateTime: GraphQLDateTime
