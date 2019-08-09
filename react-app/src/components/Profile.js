@@ -74,6 +74,7 @@ const Profile = (props) => {
       setResponse(mutationResponse);
     } else if (mutationResponse && mutationResponse.data) {
       setValues(mutationResponse.data.updateProfile);
+      Utils.updateUserInfo(mutationResponse.data.updateProfile);
       toast.success("Profile Updated")
     }
   }, [mutationResponse])
