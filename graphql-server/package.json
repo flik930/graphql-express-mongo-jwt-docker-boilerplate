@@ -9,7 +9,7 @@
     "@babel/preset-env": "^7.3.1",
     "apollo-server-core": "^2.14.2",
     "app-module-path": "^2.2.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
